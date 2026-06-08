@@ -1,0 +1,13 @@
+.DS_Store
+__pycache__/
+*.pyc
+.backend311/
+logs/
+backend/__pycache__/
+backend/nsw_veg_inference/__pycache__/
+
+# Model artifacts are too large for Vercel serverless/static deployments.
+# Keep them local or host the inference API separately.
+backend/model_assets/*.h5
+backend/model_assets/*.keras
+backend/model_assets/*.weights.h5

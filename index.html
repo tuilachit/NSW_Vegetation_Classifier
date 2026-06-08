@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NSW Vegetation Classifier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M12 22V12"/>
+          <path d="M12 12C12 12 7 9.5 7 5a5 5 0 0 1 10 0c0 4.5-5 7-5 7z"/>
+          <path d="M9 19c-2 0-4-1-4-3"/>
+          <path d="M15 19c2 0 4-1 4-3"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">VegeMap</span>
+        <span class="brand-sub">NSW Classifier</span>
+      </div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <nav class="stepper" id="stepper">
+      <div class="stepper-line"></div>
+
+      <button class="step-btn active" data-step="1">
+        <div class="step-dot">
+          <span class="step-num">1</span>
+          <svg class="step-check" viewBox="0 0 16 16" fill="none">
+            <polyline points="3 8 6.5 11.5 13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="step-meta">
+          <span class="step-title">Aerial Image</span>
+          <span class="step-sub">Upload GeoTIFF</span>
+        </div>
+      </button>
+
+      <button class="step-btn" data-step="2" disabled>
+        <div class="step-dot">
+          <span class="step-num">2</span>
+          <svg class="step-check" viewBox="0 0 16 16" fill="none">
+            <polyline points="3 8 6.5 11.5 13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="step-meta">
+          <span class="step-title">LiDAR Order</span>
+          <span class="step-sub">Request point cloud</span>
+        </div>
+      </button>
+
+      <button class="step-btn" data-step="3" disabled>
+        <div class="step-dot">
+          <span class="step-num">3</span>
+          <svg class="step-check" viewBox="0 0 16 16" fill="none">
+            <polyline points="3 8 6.5 11.5 13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="step-meta">
+          <span class="step-title">LiDAR Upload</span>
+          <span class="step-sub">Process point cloud</span>
+        </div>
+      </button>
+
+      <button class="step-btn" data-step="4" disabled>
+        <div class="step-dot">
+          <span class="step-num">4</span>
+          <svg class="step-check" viewBox="0 0 16 16" fill="none">
+            <polyline points="3 8 6.5 11.5 13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="step-meta">
+          <span class="step-title">Configuration</span>
+          <span class="step-sub">Set parameters</span>
+        </div>
+      </button>
+
+      <button class="step-btn" data-step="5" disabled>
+        <div class="step-dot">
+          <span class="step-num">5</span>
+          <svg class="step-check" viewBox="0 0 16 16" fill="none">
+            <polyline points="3 8 6.5 11.5 13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="step-meta">
+          <span class="step-title">Results</span>
+          <span class="step-sub">Classification map</span>
+        </div>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="main">
+
+    <section class="step-panel" id="panel-1">
+      <div class="step-header">
+        <div class="step-header-text">
+          <p class="step-eyebrow">Step 1 of 5</p>
+          <h1 class="step-heading">Aerial Image Upload</h1>
+          <p class="step-subheading">Upload a raw 512 × 512 RGB GeoTIFF in EPSG:3857 for the raw workflow, or upload a preprocessed 512 × 512, 11-band GeoTIFF tile for direct model inference.</p>
+        </div>
+        <div class="step-badge">GeoTIFF Input</div>
+      </div>
+
+      <div class="step-body split">
+        <div class="split-left">
+
+          <div class="upload-zone" id="aerial-drop">
+            <input type="file" id="aerial-input" accept=".tif,.tiff" hidden />
+            <div class="upload-icon-wrap">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <polyline points="16 16 12 12 8 16"/>
+                <line x1="12" y1="12" x2="12" y2="21"/>
+                <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+              </svg>
+            </div>
+            <p class="upload-primary">Drag &amp; drop your aerial image</p>
+            <p class="upload-secondary">or <button class="link-btn" id="aerial-browse">browse files</button></p>
+            <p class="upload-formats">GeoTIFF only &middot; RGB raw tile or 11-band model tile</p>
+          </div>
+
+          <div class="file-card hidden" id="aerial-card">
+            <div class="file-card-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                <polyline points="13 2 13 9 20 9"/>
+              </svg>
+            </div>
+            <div class="file-card-info">
+              <span class="file-card-name" id="aerial-filename">—</span>
+              <span class="file-card-size" id="aerial-filesize">—</span>
+            </div>
+            <div id="aerial-badge"></div>
+          </div>
+
+          <div class="mode-banner hidden" id="input-mode-banner"></div>
+
+          <div class="validation-list hidden" id="aerial-validation">
+            <div class="val-item" id="val-format">
+              <div class="val-dot pending"></div>
+              <span class="val-label">File format recognised</span>
+            </div>
+            <div class="val-item" id="val-crs">
+              <div class="val-dot pending"></div>
+              <span class="val-label">Coordinate reference system</span>
+            </div>
+            <div class="val-item" id="val-georef">
+              <div class="val-dot pending"></div>
+              <span class="val-label">Georeference metadata present</span>
+            </div>
+            <div class="val-item" id="val-bands">
+              <div class="val-dot pending"></div>
+              <span class="val-label">Band structure detected</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="split-right">
+          <div class="preview-panel">
+            <div class="preview-topbar">
+              <span class="preview-label">Image Preview</span>
+              <span class="preview-crs-tag" id="preview-crs">—</span>
+            </div>
+            <div class="preview-canvas-area" id="aerial-canvas-area">
+              <div class="preview-empty" id="aerial-empty">
+                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                <p>Preview will appear here</p>
+              </div>
+              <canvas id="aerial-canvas" class="hidden"></canvas>
+            </div>
+            <div class="preview-stats" id="aerial-stats">
+              <div class="preview-stat" id="pstat-dims" style="display:none">
+                <span class="pstat-label">Dimensions</span>
+                <span class="pstat-value" id="pval-dims">—</span>
+              </div>
+              <div class="preview-stat" id="pstat-gsd" style="display:none">
+                <span class="pstat-label">Ground Resolution</span>
+                <span class="pstat-value" id="pval-gsd">—</span>
+              </div>
+              <div class="preview-stat" id="pstat-bands" style="display:none">
+                <span class="pstat-label">Bands</span>
+                <span class="pstat-value" id="pval-bands">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-footer">
+        <div></div>
+        <button class="btn btn-primary" id="step1-next" disabled>
+          Continue to LiDAR Order
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <section class="step-panel hidden" id="panel-2">
+      <div class="step-header">
+        <div class="step-header-text">
+          <p class="step-eyebrow">Step 2 of 5</p>
+          <h1 class="step-heading">LiDAR Data Ordering</h1>
+          <p class="step-subheading">The ELVIS portal does not expose a public API. Use the bounding box coordinates below to manually order the corresponding LiDAR tiles.</p>
+        </div>
+        <div class="step-badge badge-amber">Manual Step</div>
+      </div>
+
+      <div class="step-body">
+        <div class="two-col">
+
+          <!-- Bounding box card -->
+          <div class="bbox-card">
+            <div class="bbox-card-header">
+              <h3>Study Area Bounding Box</h3>
+              <p class="bbox-crs-note">GDA2020 &nbsp;·&nbsp; Decimal Degrees</p>
+            </div>
+
+            <div class="bbox-compass-grid">
+              <div class="bbox-cell bbox-north">
+                <span class="bbox-dir">N</span>
+                <span class="bbox-val mono" id="coord-north">—</span>
+              </div>
+              <div class="bbox-middle-row">
+                <div class="bbox-cell bbox-west">
+                  <span class="bbox-dir">W</span>
+                  <span class="bbox-val mono" id="coord-west">—</span>
+                </div>
+                <div class="bbox-compass-rose">
+                  <svg width="64" height="64" viewBox="0 0 64 64">
+                    <circle cx="32" cy="32" r="30" fill="none" stroke="var(--border-subtle)" stroke-width="1"/>
+                    <circle cx="32" cy="32" r="4" fill="var(--border)" />
+                    <polygon points="32,6 29,32 32,29 35,32" fill="var(--accent-green)"/>
+                    <polygon points="32,58 29,32 32,35 35,32" fill="var(--text-muted)"/>
+                    <polygon points="6,32 32,29 29,32 32,35" fill="var(--text-muted)"/>
+                    <polygon points="58,32 32,29 35,32 32,35" fill="var(--text-muted)"/>
+                  </svg>
+                </div>
+                <div class="bbox-cell bbox-east">
+                  <span class="bbox-dir">E</span>
+                  <span class="bbox-val mono" id="coord-east">—</span>
+                </div>
+              </div>
+              <div class="bbox-cell bbox-south">
+                <span class="bbox-dir">S</span>
+                <span class="bbox-val mono" id="coord-south">—</span>
+              </div>
+            </div>
+
+            <div class="bbox-actions">
+              <button class="btn btn-secondary icon-btn" id="copy-coords-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                Copy Coordinates
+              </button>
+              <a href="https://elevation.fsdf.org.au" target="_blank" rel="noopener" class="btn btn-outline icon-btn" id="open-elvis-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/>
+                  <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+                Open ELVIS Portal
+              </a>
+            </div>
+            <textarea id="coords-copy-text" class="coords-copy-text" readonly aria-label="Bounding box coordinates"></textarea>
+          </div>
+
+          <!-- Instructions card -->
+          <div class="instructions-card">
+            <h3 class="instructions-heading">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              Ordering LiDAR from ELVIS
+            </h3>
+            <ol class="instructions-ol">
+              <li>Click <strong>Open ELVIS Portal</strong> to visit <code>elevation.fsdf.org.au</code>.</li>
+              <li>Click <strong>Order Data</strong> in the top navigation bar.</li>
+              <li>Paste your bounding box using the <strong>Copy Coordinates</strong> button above.</li>
+              <li>Select <strong>Point Cloud</strong> as product type, <strong>LAS / LAZ</strong> as format.</li>
+              <li>Add tiles to cart and complete your order. A download link will arrive by email.</li>
+              <li>When your <code>.zip</code> archive arrives, return here and proceed to Step 3.</li>
+            </ol>
+            <div class="info-banner">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+              LiDAR orders may take 24–48 hours. You can close this page and return later — your uploaded aerial image will need to be re-uploaded.
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="step-footer">
+        <button class="btn btn-ghost icon-btn" id="step2-back">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Back
+        </button>
+        <button class="btn btn-primary" id="step2-next">
+          I've received my LiDAR archive
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <section class="step-panel hidden" id="panel-3">
+      <div class="step-header">
+        <div class="step-header-text">
+          <p class="step-eyebrow">Step 3 of 5</p>
+          <h1 class="step-heading">LiDAR Archive Upload</h1>
+          <p class="step-subheading">Upload the <code>.zip</code> archive from your ELVIS order. The backend uses this with the ASC soil shapefile to build the 11-band model input stack.</p>
+        </div>
+        <div class="step-badge badge-blue">Raw Input</div>
+      </div>
+
+      <div class="step-body split">
+        <div class="split-left">
+
+          <div class="upload-zone upload-zone-blue" id="lidar-drop">
+            <input type="file" id="lidar-input" accept=".zip" hidden />
+            <div class="upload-icon-wrap upload-icon-blue">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                <polyline points="12 11 12 17"/>
+                <polyline points="9 14 12 17 15 14"/>
+              </svg>
+            </div>
+            <p class="upload-primary">Drag &amp; drop your LiDAR archive</p>
+            <p class="upload-secondary">or <button class="link-btn" id="lidar-browse">browse files</button></p>
+            <p class="upload-formats">ZIP archive &middot; LAS / LAZ point cloud tiles</p>
+          </div>
+
+          <div class="file-card hidden" id="lidar-card">
+            <div class="file-card-icon file-card-icon-blue">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+              </svg>
+            </div>
+            <div class="file-card-info">
+              <span class="file-card-name" id="lidar-filename">—</span>
+              <span class="file-card-size" id="lidar-filesize">—</span>
+            </div>
+            <div id="lidar-badge"></div>
+          </div>
+
+          <div class="proc-stages hidden" id="lidar-stages">
+            <div class="proc-stage" id="ps-extract">
+              <div class="ps-dot"></div>
+              <span>Archive accepted for backend preprocessing</span>
+            </div>
+            <div class="proc-stage" id="ps-verify">
+              <div class="ps-dot"></div>
+              <span>Spatial extent checked against aerial tile</span>
+            </div>
+            <div class="proc-stage" id="ps-chm">
+              <div class="ps-dot"></div>
+              <span>CHM generated from LAS/LAZ returns</span>
+            </div>
+            <div class="proc-stage" id="ps-strata">
+              <div class="ps-dot"></div>
+              <span>Strata fractions &amp; TWI generated</span>
+            </div>
+            <div class="proc-stage" id="ps-final">
+              <div class="ps-dot"></div>
+              <span>Final 11-band stack sent to model</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="split-right">
+          <div class="preview-panel">
+            <div class="preview-topbar">
+              <span class="preview-label">Backend LiDAR Features</span>
+              <div class="chm-legend hidden" id="chm-legend">
+                <span class="legend-lo">0 m</span>
+                <div class="legend-grad"></div>
+                <span class="legend-hi">40+ m</span>
+              </div>
+            </div>
+            <div class="preview-canvas-area" id="chm-canvas-area">
+              <div class="preview-empty" id="chm-empty">
+                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                  <polygon points="3 17 9 6 15 13 19 9 21 17"/>
+                  <line x1="3" y1="17" x2="21" y2="17"/>
+                </svg>
+                <p>CHM, strata and TWI are generated during backend inference</p>
+              </div>
+              <canvas id="chm-canvas" class="hidden"></canvas>
+            </div>
+            <div class="preview-stats" id="chm-stats">
+              <div class="preview-stat" id="cstat-max" style="display:none">
+                <span class="pstat-label">Max Height</span>
+                <span class="pstat-value" id="cval-max">—</span>
+              </div>
+              <div class="preview-stat" id="cstat-mean" style="display:none">
+                <span class="pstat-label">Mean Height</span>
+                <span class="pstat-value" id="cval-mean">—</span>
+              </div>
+              <div class="preview-stat" id="cstat-cover" style="display:none">
+                <span class="pstat-label">Canopy Cover</span>
+                <span class="pstat-value" id="cval-cover">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-footer">
+        <button class="btn btn-ghost icon-btn" id="step3-back">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Back
+        </button>
+        <button class="btn btn-primary" id="step3-next" disabled>
+          Continue to Configuration
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <section class="step-panel hidden" id="panel-4">
+      <div class="step-header">
+        <div class="step-header-text">
+          <p class="step-eyebrow">Step 4 of 5</p>
+          <h1 class="step-heading">Classifier Configuration</h1>
+          <p class="step-subheading">Select output resolution and soil source. Raw inference uses the local ASC soil shapefile configured on the backend.</p>
+        </div>
+      </div>
+
+      <div class="step-body">
+        <div class="settings-layout">
+
+          <div class="settings-col">
+            <!-- Output resolution -->
+            <div class="settings-group">
+              <h3 class="settings-group-title">Output Resolution</h3>
+              <div class="radio-group">
+                <label class="radio-card-label">
+                  <input type="radio" name="resolution" value="0.6" checked />
+                  <div class="radio-card">
+                    <span class="radio-val">0.6 m/px</span>
+                    <span class="radio-desc">Native imagery resolution &middot; Recommended</span>
+                    <span class="radio-default-badge">Default</span>
+                  </div>
+                </label>
+                <label class="radio-card-label">
+                  <input type="radio" name="resolution" value="1.0" />
+                  <div class="radio-card">
+                    <span class="radio-val">1.0 m/px</span>
+                    <span class="radio-desc">Balanced &middot; Smaller output</span>
+                  </div>
+                </label>
+                <label class="radio-card-label">
+                  <input type="radio" name="resolution" value="2.0" />
+                  <div class="radio-card">
+                    <span class="radio-val">2.0 m/px</span>
+                    <span class="radio-desc">Faster &middot; Lower detail</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Architecture (locked) -->
+            <div class="settings-group">
+              <h3 class="settings-group-title">CNN Architecture</h3>
+              <div class="arch-card">
+                <div class="arch-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="2" y="2" width="5" height="5" rx="1"/>
+                    <rect x="9.5" y="2" width="5" height="5" rx="1"/>
+                    <rect x="17" y="2" width="5" height="5" rx="1"/>
+                    <rect x="5.5" y="10" width="5" height="5" rx="1"/>
+                    <rect x="13.5" y="10" width="5" height="5" rx="1"/>
+                    <rect x="9.5" y="18" width="5" height="4" rx="1"/>
+                    <line x1="4.5" y1="7" x2="8" y2="10"/>
+                    <line x1="12" y1="7" x2="8" y2="10"/>
+                    <line x1="12" y1="7" x2="16" y2="10"/>
+                    <line x1="19.5" y1="7" x2="16" y2="10"/>
+                    <line x1="8" y1="15" x2="12" y2="18"/>
+                    <line x1="16" y1="15" x2="12" y2="18"/>
+                  </svg>
+                </div>
+                <div class="arch-info">
+                  <span class="arch-name">Two-stage U-Net + ResNet-50 Pipeline</span>
+                  <span class="arch-detail">11-ch input &middot; Vegetation/Other gate &middot; 9 vegetation groups</span>
+                </div>
+                <div class="arch-lock-badge">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                  Fixed
+                </div>
+              </div>
+            </div>
+
+            <!-- Soil source -->
+            <div class="settings-group">
+              <h3 class="settings-group-title">Soil Classification Source</h3>
+              <select id="soil-source" class="styled-select">
+                <option value="auto">Local ASC shapefile on backend</option>
+              </select>
+              <div class="soil-status" id="soil-status">
+                <div class="mini-spinner" id="soil-spinner"></div>
+                <span id="soil-status-text">ASC soil will be rasterised during backend preprocessing.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Input stack checklist -->
+          <div class="settings-col">
+            <div class="checklist-card">
+              <div class="checklist-header">
+                <h3>Input Data Stack</h3>
+                <span class="checklist-meta">11 channels &middot; 512 × 512 px tiles</span>
+              </div>
+              <div class="checklist-list">
+
+                <div class="cl-item ready" id="cl-rgb">
+                  <div class="cl-dot cl-green"></div>
+                  <div class="cl-info">
+                    <span class="cl-name">Aerial RGB</span>
+                    <span class="cl-detail">Bands 1–3 &middot; 0–255 (float32)</span>
+                  </div>
+                  <svg class="cl-tick" width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <polyline points="3 8 6.5 11.5 13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+
+                <div class="cl-item pending" id="cl-soil">
+                  <div class="cl-dot cl-amber"></div>
+                  <div class="cl-info">
+                    <span class="cl-name">Soil Code (ASC)</span>
+                    <span class="cl-detail">Band 4 &middot; 17 soil orders, 0 = nodata</span>
+                  </div>
+                  <div class="mini-spinner"></div>
+                </div>
+
+                <div class="cl-item ready" id="cl-chm">
+                  <div class="cl-dot cl-blue"></div>
+                  <div class="cl-info">
+                    <span class="cl-name">Canopy Height Model</span>
+                    <span class="cl-detail">Band 5 &middot; 0–60 m, NaN = nodata</span>
+                  </div>
+                  <svg class="cl-tick" width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <polyline points="3 8 6.5 11.5 13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+
+                <div class="cl-item ready" id="cl-cover">
+                  <div class="cl-dot cl-blue"></div>
+                  <div class="cl-info">
+                    <span class="cl-name">Canopy Cover</span>
+                    <span class="cl-detail">Band 6 &middot; 0–1 fraction</span>
+                  </div>
+                  <svg class="cl-tick" width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <polyline points="3 8 6.5 11.5 13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+
+                <div class="cl-item ready" id="cl-strata">
+                  <div class="cl-dot cl-blue"></div>
+                  <div class="cl-info">
+                    <span class="cl-name">Strata Fractions</span>
+                    <span class="cl-detail">Bands 7–10 &middot; Ground / Understorey / Midstorey / Canopy</span>
+                  </div>
+                  <svg class="cl-tick" width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <polyline points="3 8 6.5 11.5 13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+
+                <div class="cl-item ready" id="cl-twi">
+                  <div class="cl-dot cl-blue"></div>
+                  <div class="cl-info">
+                    <span class="cl-name">TWI</span>
+                    <span class="cl-detail">Band 11 &middot; Topographic Wetness Index ~0–20</span>
+                  </div>
+                  <svg class="cl-tick" width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <polyline points="3 8 6.5 11.5 13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+
+                <div class="cl-item ready" id="cl-svtm">
+                  <div class="cl-dot cl-green"></div>
+                  <div class="cl-info">
+                    <span class="cl-name">Output Label Schema</span>
+                    <span class="cl-detail">0 nodata &middot; 1–9 vegetation groups &middot; 17 Other</span>
+                  </div>
+                  <svg class="cl-tick" width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <polyline points="3 8 6.5 11.5 13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="step-footer">
+        <button class="btn btn-ghost icon-btn" id="step4-back">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Back
+        </button>
+        <button class="btn btn-primary" id="step4-next">
+          Run Classifier
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <section class="step-panel hidden" id="panel-5">
+      <div class="step-header" id="results-header">
+        <div class="step-header-text">
+          <p class="step-eyebrow">Step 5 of 5</p>
+          <h1 class="step-heading" id="results-heading">Running Classifier</h1>
+          <p class="step-subheading" id="results-subheading">Processing your multi-channel input stack through the two-stage vegetation model. Each stage is tracked below.</p>
+        </div>
+        <div class="step-badge badge-purple" id="results-badge">Processing</div>
+      </div>
+
+      <div class="step-body" id="step5-body">
+
+        <div id="processing-view">
+          <div class="pipeline-list">
+
+            <div class="pipeline-item" id="pl-preprocess">
+              <div class="pl-icon pl-running">
+                <div class="pl-spinner"></div>
+              </div>
+              <div class="pl-info">
+                <span class="pl-name">Preprocessing</span>
+                <span class="pl-desc">Normalising input bands and handling NaN values</span>
+              </div>
+              <span class="pl-state">Running</span>
+            </div>
+
+            <div class="pipeline-item pl-pending" id="pl-reproject">
+              <div class="pl-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              </div>
+              <div class="pl-info">
+                <span class="pl-name">Reprojection &amp; Alignment</span>
+                <span class="pl-desc">Using uploaded 11-band stack or backend-generated raw stack</span>
+              </div>
+              <span class="pl-state">Pending</span>
+            </div>
+
+            <div class="pipeline-item pl-pending" id="pl-inference">
+              <div class="pl-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><rect x="16" y="2" width="6" height="6" rx="1"/><rect x="5" y="12" width="6" height="6" rx="1"/><rect x="13" y="12" width="6" height="6" rx="1"/><rect x="9" y="19" width="6" height="3" rx="1"/></svg>
+              </div>
+              <div class="pl-info">
+                <span class="pl-name">Model Inference</span>
+                <span class="pl-desc">Binary gate followed by 9-group vegetation inference across 512 × 512 tiles</span>
+              </div>
+              <span class="pl-state">Pending</span>
+            </div>
+
+            <div class="pipeline-item pl-pending" id="pl-postprocess">
+              <div class="pl-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <div class="pl-info">
+                <span class="pl-name">Post-processing</span>
+                <span class="pl-desc">Rendering prediction preview from backend raster output</span>
+              </div>
+              <span class="pl-state">Pending</span>
+            </div>
+
+            <div class="pipeline-item pl-pending" id="pl-export">
+              <div class="pl-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              </div>
+              <div class="pl-info">
+                <span class="pl-name">Export</span>
+                <span class="pl-desc">GeoTIFF and HTML report available after backend inference</span>
+              </div>
+              <span class="pl-state">Pending</span>
+            </div>
+
+          </div>
+
+          <div class="overall-progress-wrap">
+            <div class="overall-progress-header">
+              <span id="progress-label">Preprocessing…</span>
+              <span id="progress-pct">0%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+            </div>
+            <p class="progress-eta" id="progress-eta">Estimated time: calculating…</p>
+          </div>
+        </div>
+
+        <div id="results-view" class="hidden">
+          <div class="results-layout">
+
+            <!-- Map panel -->
+            <div class="results-map-panel">
+              <div class="results-map-header">
+                <span class="results-map-title">Vegetation Classification Map</span>
+                <div class="map-ctrl-group">
+                  <button class="map-ctrl-btn" id="map-zoom-in" title="Zoom in">+</button>
+                  <button class="map-ctrl-btn" id="map-zoom-out" title="Zoom out">−</button>
+                </div>
+              </div>
+              <div class="results-map-canvas-wrap">
+                <canvas id="results-canvas"></canvas>
+              </div>
+              <div class="svtm-legend">
+                <p class="svtm-legend-title">SVTM Vegetation Formations</p>
+                <div class="svtm-legend-items" id="legend-items"></div>
+              </div>
+            </div>
+
+            <!-- Stats + Downloads -->
+            <div class="results-side">
+              <div class="stats-grid">
+                <div class="stat-card">
+                  <span class="stat-card-lbl">Area Classified</span>
+                  <span class="stat-card-val" id="rstat-area">—</span>
+                  <span class="stat-card-unit">ha</span>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-card-lbl">Classes Detected</span>
+                  <span class="stat-card-val" id="rstat-classes">—</span>
+                  <span class="stat-card-unit">of 9 + Other</span>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-card-lbl">Model Output</span>
+                  <span class="stat-card-val" id="rstat-conf">—</span>
+                  <span class="stat-card-unit">status</span>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-card-lbl">Processing Time</span>
+                  <span class="stat-card-val" id="rstat-time">—</span>
+                  <span class="stat-card-unit">sec</span>
+                </div>
+              </div>
+
+              <div class="downloads-block">
+                <h4 class="downloads-title">Export Results</h4>
+                <div class="downloads-list">
+                  <button class="dl-btn" id="dl-geotiff">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Classification Raster (GeoTIFF)
+                  </button>
+                  <button class="dl-btn" id="dl-report">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    Summary Report (HTML)
+                  </button>
+                </div>
+              </div>
+
+              <button class="btn btn-ghost btn-full" id="restart-btn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.09"/>
+                </svg>
+                Start New Classification
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="step-footer" id="step5-footer">
+        <button class="btn btn-ghost icon-btn" id="step5-back" style="display:none">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Back
+        </button>
+        <div></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/geotiff@2/dist-browser/geotiff.js"></script>
+<script src="app.js?v=soil-ready-20260601"></script>
+</body>
+</html>

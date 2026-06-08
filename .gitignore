@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+
+# Conda / local envs
+.venv/
+venv/
+env/
+.backend311/
+logs/
+
+# Large model artifacts: copy these manually into backend/model_assets/
+*.keras
+*.weights.h5
+backend/model_assets/*.h5
+backend/model_assets/*.keras
+backend/soil_assets/asc/*
+!backend/soil_assets/asc/README.md
+.vercel

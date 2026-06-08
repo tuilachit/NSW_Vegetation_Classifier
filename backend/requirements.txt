@@ -1,0 +1,15 @@
+tensorflow>=2.16,<2.19
+numpy==1.26.4
+fastapi
+uvicorn
+python-multipart
+rasterio
+Pillow
+h5py
+geopandas
+shapely
+pyproj
+laspy
+scipy
+numba
+lazrs

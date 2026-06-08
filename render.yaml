@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: vegemap-backend
+    runtime: python
+    plan: starter
+    region: singapore
+    buildCommand: pip install -r backend/requirements.txt && python backend/fetch_model_assets.py
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: TF_CPP_MIN_LOG_LEVEL
+        value: "2"
+      - key: CUDA_VISIBLE_DEVICES
+        value: "-1"
+      - key: BINARY_WEIGHTS_URL
+        sync: false
+      - key: GROUP_WEIGHTS_URL
+        sync: false

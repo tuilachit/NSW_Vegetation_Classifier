@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NSW Vegetation Classifier</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <nav class="nav">
+      <a href="#overview">Overview</a>
+      <a href="#system">System</a>
+      <a href="#results">Results</a>
+      <a href="#run">Run</a>
+      <a href="https://github.com/tuilachit/NSW_Vegetation_Classifier">GitHub</a>
+    </nav>
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">Deep Learning · Geospatial Inference</p>
+        <h1>NSW Vegetation Classifier</h1>
+        <p class="lead">A browser-based tool and FastAPI backend for classifying NSW vegetation from multi-channel GeoTIFF tiles, aerial imagery, LiDAR point clouds, and ASC soil data.</p>
+        <div class="actions">
+          <a class="button primary" href="https://github.com/tuilachit/NSW_Vegetation_Classifier">View repository</a>
+          <a class="button" href="https://github.com/tuilachit/NSW_Vegetation_Classifier/blob/main/docs/project/case-study.md">Read case study</a>
+        </div>
+      </div>
+      <figure>
+        <img src="assets/prediction-example.png" alt="Ground truth and model prediction comparison">
+        <figcaption>Example prediction overlay from the evaluation set.</figcaption>
+      </figure>
+    </div>
+  </header>
+
+  <main>
+    <section id="overview" class="section">
+      <div class="section-title">
+        <p class="eyebrow">Problem</p>
+        <h2>Vegetation mapping from heterogeneous geospatial inputs</h2>
+      </div>
+      <div class="cards three">
+        <article>
+          <h3>Input</h3>
+          <p>Prepared 11-band GeoTIFF tiles, or raw RGB imagery paired with ELVIS LAS/LAZ point-cloud archives.</p>
+        </article>
+        <article>
+          <h3>Model</h3>
+          <p>Two-stage U-Net style segmentation with a ResNet50 encoder: vegetation gate first, grouped vegetation class prediction second.</p>
+        </article>
+        <article>
+          <h3>Output</h3>
+          <p>Colour-coded classification map, class fractions, prediction GeoTIFF, and a downloadable HTML report.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="system" class="section split">
+      <div>
+        <p class="eyebrow">Architecture</p>
+        <h2>Frontend workflow plus local model-serving backend</h2>
+        <p>The frontend validates GeoTIFF inputs, extracts bounds for LiDAR ordering, and sends inference requests to the backend. The backend loads TensorFlow weights, preprocesses raw geospatial inputs when needed, and returns prediction rasters and preview images.</p>
+      </div>
+      <img src="assets/system-workflow.png" alt="System workflow diagram">
+    </section>
+
+    <section class="section split alt">
+      <img src="assets/model-architecture.png" alt="Two-stage CNN architecture">
+      <div>
+        <p class="eyebrow">Model</p>
+        <h2>Two-stage segmentation pipeline</h2>
+        <p>The final pipeline separates vegetation from non-target land cover before classifying vegetation pixels into nine grouped formations. This makes the output easier to inspect and reduces pressure on the second classifier to model background pixels.</p>
+      </div>
+    </section>
+
+    <section id="results" class="section">
+      <div class="section-title">
+        <p class="eyebrow">Evaluation</p>
+        <h2>Result summary</h2>
+      </div>
+      <div class="metrics">
+        <div><span>0.6535</span><p>Binary gate test mIoU</p></div>
+        <div><span>0.2035</span><p>Nine-group classifier test mIoU</p></div>
+        <div><span>11</span><p>Input channels</p></div>
+        <div><span>512</span><p>Tile size in pixels</p></div>
+      </div>
+      <div class="image-row">
+        <img src="assets/experiment-comparison.png" alt="Experiment comparison chart">
+        <img src="assets/per-class-iou.png" alt="Per-class IoU chart">
+      </div>
+    </section>
+
+    <section id="run" class="section">
+      <div class="section-title">
+        <p class="eyebrow">Run locally</p>
+        <h2>Use the real TensorFlow backend</h2>
+      </div>
+      <pre><code>cd backend
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn main:app --host 127.0.0.1 --port 8000
+
+cd ..
+python3 -m http.server 8080 --bind 127.0.0.1</code></pre>
+      <p class="note">Large model weights and ASC soil files are documented in the repository README and are intentionally kept outside normal Git history.</p>
+    </section>
+  </main>
+</body>
+</html>

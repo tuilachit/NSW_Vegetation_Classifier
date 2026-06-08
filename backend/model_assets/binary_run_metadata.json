@@ -1,0 +1,49 @@
+{
+  "notebook_version": "binary_veg_other_script",
+  "data_root": "/data/luknguye/nsw_veg_real17/splits",
+  "output_root": "/data/luknguye/nsw_veg_real17/retrain_outputs_real17_binary_veg_other",
+  "warmstart_checkpoint": "/data/luknguye/nsw_veg_real17/retrain_outputs_real_17class_warmstart/checkpoints/hybrid_real17_p2_best.keras",
+  "source_metadata": "/data/luknguye/nsw_veg_real17/retrain_outputs_real_17class_warmstart/run_metadata.json",
+  "label_mapping": {
+    "raw_1_16": "vegetation class 1",
+    "raw_17": "Other class 0",
+    "raw_0": "ignore 255"
+  },
+  "class_names": [
+    "Other / non-target land cover",
+    "Vegetation classes 1-16"
+  ],
+  "channel_stats": {
+    "4": {
+      "mean": 4.928045636106572,
+      "std": 8.030954685789169,
+      "count": 546892340
+    },
+    "10": {
+      "mean": 4.494380532484292,
+      "std": 1.6228959748053866,
+      "count": 929038336
+    }
+  },
+  "soil_scale": 17.0,
+  "class_counts": {
+    "0": 166804211,
+    "1": 762234125
+  },
+  "class_weights": [
+    1.3625843524932861,
+    0.6374156475067139
+  ],
+  "batch_size": 3,
+  "epochs": {
+    "phase1": 50,
+    "phase2": 100
+  },
+  "learning_rates": {
+    "phase1": 0.0001,
+    "phase2": 5e-06
+  },
+  "loss": "weighted_ce_plus_0.7_dice",
+  "monitor": "val_veg_iou",
+  "architecture": "hybrid_rgb_resnet_plus_aux_encoder_binary"
+}
