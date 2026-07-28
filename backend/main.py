@@ -7,16 +7,18 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from rasterio.io import MemoryFile
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from PIL import Image
-
 from nsw_veg_inference.config import FINAL_CLASS_VALUES
 from nsw_veg_inference.preprocess import read_11_channel_geotiff
-from nsw_veg_inference.raw_preprocess import build_11_band_tile, missing_soil_assets, soil_assets_ready
-
+from nsw_veg_inference.raw_preprocess import (
+    build_11_band_tile,
+    missing_soil_assets,
+    soil_assets_ready,
+)
+from PIL import Image
+from rasterio.io import MemoryFile
 
 APP_ROOT = Path(__file__).resolve().parent
 ASSET_DIR = APP_ROOT / "model_assets"

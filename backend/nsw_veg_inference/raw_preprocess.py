@@ -14,7 +14,6 @@ import sys
 import tempfile
 from pathlib import Path
 
-
 APP_ROOT = Path(__file__).resolve().parents[1]
 TILE_BUILDER = Path(__file__).resolve().with_name("tile_builder.py")
 DEFAULT_ASC_DIR = APP_ROOT / "soil_assets" / "asc"

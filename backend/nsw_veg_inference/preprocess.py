@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any, Mapping, cast
 
 import numpy as np
 import rasterio
+from numpy.typing import NDArray
 
 from .config import (
     BINARY_IDXS,
@@ -19,15 +21,21 @@ from .config import (
 )
 
 
-def load_normalization_metadata(path: str | Path) -> dict:
+def load_normalization_metadata(path: str | Path) -> dict[str, Any]:
     with Path(path).open() as f:
-        meta = json.load(f)
+        raw_metadata = json.load(f)
+    if not isinstance(raw_metadata, dict):
+        raise TypeError(f"{path} must contain a JSON object")
+    meta = cast(dict[str, Any], raw_metadata)
     if "channel_stats" not in meta:
         raise KeyError(f"{path} does not contain channel_stats")
     return meta
 
 
-def preprocess_channels(x_full: np.ndarray, metadata: dict) -> np.ndarray:
+def preprocess_channels(
+    x_full: NDArray[Any],
+    metadata: Mapping[str, Any],
+) -> NDArray[np.float32]:
     if x_full.shape[-1] != INPUT_CHANNELS:
         raise ValueError(f"Expected {INPUT_CHANNELS} channels, got {x_full.shape[-1]}")
 
@@ -57,10 +65,12 @@ def preprocess_channels(x_full: np.ndarray, metadata: dict) -> np.ndarray:
     return np.nan_to_num(x, nan=0.0, posinf=0.0, neginf=0.0).astype(np.float32)
 
 
-def read_11_channel_geotiff(path: str | Path) -> tuple[np.ndarray, dict]:
+def read_11_channel_geotiff(
+    path: str | Path,
+) -> tuple[NDArray[np.float32], dict[str, Any]]:
     with rasterio.open(path) as src:
         if src.count != INPUT_CHANNELS:
             raise ValueError(f"{path}: expected {INPUT_CHANNELS} bands, got {src.count}")
         arr = np.transpose(src.read().astype(np.float32), (1, 2, 0))
-        profile = src.profile.copy()
+        profile = dict(src.profile)
     return arr, profile

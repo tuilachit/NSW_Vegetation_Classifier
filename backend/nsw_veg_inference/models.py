@@ -6,7 +6,6 @@ deserialize full `.keras` models, avoiding Lambda-bytecode compatibility issues.
 
 from __future__ import annotations
 
-import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 

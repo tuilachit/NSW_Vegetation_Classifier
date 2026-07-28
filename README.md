@@ -100,6 +100,24 @@ Expected when the model and soil assets are installed:
 }
 ```
 
+## Quality checks
+
+The lightweight CI suite validates preprocessing without requiring the external model weights or
+soil dataset:
+
+```bash
+python3.11 -m venv .backend311
+source .backend311/bin/activate
+pip install -r backend/requirements-ci.txt
+ruff check backend
+mypy --ignore-missing-imports \
+  backend/nsw_veg_inference/config.py \
+  backend/nsw_veg_inference/preprocess.py \
+  backend/nsw_veg_inference/raw_preprocess.py
+PYTHONPATH=backend python -m unittest discover -s backend/tests
+python -m compileall -q backend
+```
+
 ## Model And Soil Assets
 
 Large binary assets are not committed to this public repository.

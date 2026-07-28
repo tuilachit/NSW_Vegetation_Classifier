@@ -13,7 +13,6 @@ import sys
 import urllib.request
 from pathlib import Path
 
-
 ASSET_DIR = Path(__file__).resolve().parent / "model_assets"
 ASSETS = [
     ("BINARY_WEIGHTS_URL", ASSET_DIR / "binary_veg_other_p2_best.weights.h5"),

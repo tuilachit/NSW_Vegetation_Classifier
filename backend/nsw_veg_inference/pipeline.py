@@ -9,7 +9,11 @@ import rasterio
 
 from .config import FINAL_CLASS_VALUES, PATCH_SIZE
 from .models import load_weighted_models
-from .preprocess import load_normalization_metadata, preprocess_channels, read_11_channel_geotiff
+from .preprocess import (
+    load_normalization_metadata,
+    preprocess_channels,
+    read_11_channel_geotiff,
+)
 
 
 class VegetationPipeline:

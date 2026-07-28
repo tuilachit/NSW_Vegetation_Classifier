@@ -1,0 +1,4 @@
+numpy==1.26.4
+rasterio==1.4.4
+ruff==0.16.0
+mypy==2.3.0
